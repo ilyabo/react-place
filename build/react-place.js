@@ -36,7 +36,6 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var NO_MATCHING = 'Unrecognised {{value}}, please check and re-enter.';
-var DEFAULT_COUNTRY = 'US';
 
 var compose = function compose() {
   var fns = arguments;
@@ -71,7 +70,6 @@ var Location = function (_React$Component) {
     key: 'componentWillMount',
     value: function componentWillMount() {
       this._googlePredictions = [];
-      this._country = this.props.country || DEFAULT_COUNTRY;
       this._noMatching = this.props.noMatching || NO_MATCHING;
     }
   }, {
@@ -97,11 +95,6 @@ var Location = function (_React$Component) {
 
       input.addEventListener('awesomplete-selectcomplete', this._handleAutocompleteSelect.bind(this));
       input.addEventListener('keyup', this._handleInputChange.bind(this));
-    }
-  }, {
-    key: 'updateCountry',
-    value: function updateCountry(country) {
-      this._country = country;
     }
   }, {
     key: '_handleInputChange',
@@ -167,7 +160,10 @@ var Location = function (_React$Component) {
   }, {
     key: '_getPredictions',
     value: function _getPredictions(text) {
-      var _this4 = this;
+      var _props = this.props;
+      var country = _props.country;
+      var bounds = _props.bounds;
+      var type = _props.type;
 
       var service = (this.props.google || _google2.default).createAutocompleteService();
       var isThereAnyText = !!text;
@@ -176,8 +172,9 @@ var Location = function (_React$Component) {
         return new _promisePolyfill2.default(function (resolve, reject) {
           service.getPlacePredictions({
             input: text,
-            componentRestrictions: { country: _this4._country },
-            types: ['(regions)']
+            bounds: bounds,
+            componentRestrictions: country ? { country: country } : null,
+            types: type ? [type] : null
           }, function (result) {
             if (result !== null) {
               resolve(result);
@@ -216,6 +213,13 @@ Location.propTypes = {
   onLocationSet: _react2.default.PropTypes.func,
   className: _react2.default.PropTypes.string,
   placeholder: _react2.default.PropTypes.string,
+  type: _react2.default.PropTypes.string,
+  bounds: _react2.default.PropTypes.shape({
+    east: _react2.default.PropTypes.number,
+    west: _react2.default.PropTypes.number,
+    north: _react2.default.PropTypes.number,
+    south: _react2.default.PropTypes.number
+  }),
   country: _react2.default.PropTypes.string,
   noMatching: _react2.default.PropTypes.string,
   google: _react2.default.PropTypes.object

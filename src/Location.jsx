@@ -7,7 +7,6 @@ import Promise from 'promise-polyfill';
 import google from './vendor/google';
 
 const NO_MATCHING = 'Unrecognised {{value}}, please check and re-enter.';
-const DEFAULT_COUNTRY = 'US';
 
 var compose = function () {
   var fns = arguments;
@@ -34,7 +33,6 @@ export default class Location extends React.Component {
 
   componentWillMount() {
     this._googlePredictions = [];
-    this._country = this.props.country || DEFAULT_COUNTRY;
     this._noMatching = this.props.noMatching || NO_MATCHING;
   }
 
@@ -66,10 +64,6 @@ export default class Location extends React.Component {
       'keyup',
       this._handleInputChange.bind(this)
     );
-  }
-
-  updateCountry(country) {
-    this._country = country;
   }
 
   _handleInputChange(event) {
@@ -122,6 +116,7 @@ export default class Location extends React.Component {
   }
 
   _getPredictions(text) {
+    var { country, bounds, type } = this.props;
     var service = (this.props.google || google).createAutocompleteService();
     var isThereAnyText = !!text;
 
@@ -129,8 +124,9 @@ export default class Location extends React.Component {
       return new Promise((resolve, reject) => {
         service.getPlacePredictions({
           input: text,
-          componentRestrictions: { country: this._country },
-          types: ['(regions)']
+          bounds,
+          componentRestrictions: country ? { country } : null,
+          types: type ? [ type ] : null
         }, (result) => {
           if (result !== null) {
             resolve(result);
@@ -163,7 +159,15 @@ Location.propTypes = {
   onLocationSet: React.PropTypes.func,
   className: React.PropTypes.string,
   placeholder: React.PropTypes.string,
+  type: React.PropTypes.string,
+  bounds: React.PropTypes.shape({
+    east: React.PropTypes.number,
+    west: React.PropTypes.number,
+    north: React.PropTypes.number,
+    south: React.PropTypes.number
+  }),
   country: React.PropTypes.string,
   noMatching: React.PropTypes.string,
   google: React.PropTypes.object
 };
+

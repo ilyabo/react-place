@@ -34,7 +34,7 @@
 /******/ 	__webpack_require__.c = installedModules;
 /******/
 /******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "/Users/krasimir/Work/Krasimir/react-place/example-es6";
+/******/ 	__webpack_require__.p = "/Users/ilyabo/Workspace/react-place/example-es6";
 /******/
 /******/ 	// Load entry module and return exports
 /******/ 	return __webpack_require__(0);
@@ -66,23 +66,45 @@
 	  pre.innerHTML = JSON.stringify(value, null, 2);
 	}
 	
+	function tryParse(json) {
+	  var obj;
+	  try {
+	    obj = JSON.parse(json);
+	    console.log("parsed json", obj);
+	  } catch (err) {
+	    console.log("couldn't parse " + json);
+	  }
+	
+	  return obj;
+	}
+	
 	window.onload = function () {
 	  var country = document.querySelector('#country-dropdown');
-	  var container = document.querySelector('#container');
-	  var location;
+	  country.addEventListener('change', render);
 	
-	  location = _reactDom2['default'].render(_react2['default'].createElement(_srcLocationJsx2['default'], {
+	  var bounds = document.querySelector('#bounds');
+	  bounds.addEventListener('change', render);
+	  bounds.addEventListener('keyup', render);
+	  bounds.addEventListener('paste', render);
+	
+	  render();
+	};
+	
+	function render() {
+	  var country = document.querySelector('#country-dropdown');
+	  var bounds = document.querySelector('#bounds');
+	  var container = document.querySelector('#container');
+	
+	  _reactDom2['default'].render(_react2['default'].createElement(_srcLocationJsx2['default'], {
 	    className: 'location',
 	    placeholder: 'Where are you?',
 	    country: country.value,
-	    noMatching: 'Sorry, I can not find {{value}}.',
+	    type: '(regions)',
+	    bounds: tryParse(bounds.value),
+	    noMatching: 'Sorry, I cannot find {{value}}.',
 	    onLocationSet: onLocationSet
 	  }), container);
-	
-	  country.addEventListener('change', function () {
-	    location.updateCountry(country.value);
-	  });
-	};
+	}
 
 /***/ },
 /* 1 */
@@ -19709,7 +19731,6 @@
 	var _vendorGoogle2 = _interopRequireDefault(_vendorGoogle);
 	
 	var NO_MATCHING = 'Unrecognised {{value}}, please check and re-enter.';
-	var DEFAULT_COUNTRY = 'US';
 	
 	var compose = function compose() {
 	  var fns = arguments;
@@ -19744,7 +19765,6 @@
 	    key: 'componentWillMount',
 	    value: function componentWillMount() {
 	      this._googlePredictions = [];
-	      this._country = this.props.country || DEFAULT_COUNTRY;
 	      this._noMatching = this.props.noMatching || NO_MATCHING;
 	    }
 	  }, {
@@ -19770,11 +19790,6 @@
 	
 	      input.addEventListener('awesomplete-selectcomplete', this._handleAutocompleteSelect.bind(this));
 	      input.addEventListener('keyup', this._handleInputChange.bind(this));
-	    }
-	  }, {
-	    key: 'updateCountry',
-	    value: function updateCountry(country) {
-	      this._country = country;
 	    }
 	  }, {
 	    key: '_handleInputChange',
@@ -19840,7 +19855,10 @@
 	  }, {
 	    key: '_getPredictions',
 	    value: function _getPredictions(text) {
-	      var _this3 = this;
+	      var _props = this.props;
+	      var country = _props.country;
+	      var bounds = _props.bounds;
+	      var type = _props.type;
 	
 	      var service = (this.props.google || _vendorGoogle2['default']).createAutocompleteService();
 	      var isThereAnyText = !!text;
@@ -19849,8 +19867,9 @@
 	        return new _promisePolyfill2['default'](function (resolve, reject) {
 	          service.getPlacePredictions({
 	            input: text,
-	            componentRestrictions: { country: _this3._country },
-	            types: ['(regions)']
+	            bounds: bounds,
+	            componentRestrictions: country ? { country: country } : null,
+	            types: type ? [type] : null
 	          }, function (result) {
 	            if (result !== null) {
 	              resolve(result);
@@ -19889,6 +19908,13 @@
 	  onLocationSet: _react2['default'].PropTypes.func,
 	  className: _react2['default'].PropTypes.string,
 	  placeholder: _react2['default'].PropTypes.string,
+	  type: _react2['default'].PropTypes.string,
+	  bounds: _react2['default'].PropTypes.shape({
+	    east: _react2['default'].PropTypes.number,
+	    west: _react2['default'].PropTypes.number,
+	    north: _react2['default'].PropTypes.number,
+	    south: _react2['default'].PropTypes.number
+	  }),
 	  country: _react2['default'].PropTypes.string,
 	  noMatching: _react2['default'].PropTypes.string,
 	  google: _react2['default'].PropTypes.object

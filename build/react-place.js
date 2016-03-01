@@ -140,17 +140,13 @@ var Location = function (_React$Component) {
         return item && item.place_id ? item.place_id : false;
       };
       var getPlaceId = compose(validate, find);
-      var success = function success(location) {
-        _this3.props.onLocationSet && _this3.props.onLocationSet({
-          description: value,
-          coords: {
-            lat: location.lat(),
-            lng: location.lng()
-          }
-        });
+      var success = function success(result) {
+        if (_this3.props.onLocationSet) {
+          _this3.props.onLocationSet(result);
+        }
       };
 
-      this._getCoordinates(getPlaceId(this._googlePredictions)).then(success);
+      this._geoCode(getPlaceId(this._googlePredictions)).then(success);
     }
   }, {
     key: '_getInputValue',
@@ -187,14 +183,14 @@ var Location = function (_React$Component) {
       return new _promisePolyfill2.default(function (resolve, reject) {});
     }
   }, {
-    key: '_getCoordinates',
-    value: function _getCoordinates(placeId) {
+    key: '_geoCode',
+    value: function _geoCode(placeId) {
       var geocoder = (this.props.google || _google2.default).createGeocoder();
 
       return new _promisePolyfill2.default(function (resolve, reject) {
         geocoder.geocode({ placeId: placeId }, function (results, status) {
           if (status === 'OK' && results && results.length > 0) {
-            resolve(results[0].geometry.location);
+            resolve(results[0]);
           } else {
             reject(false);
           }

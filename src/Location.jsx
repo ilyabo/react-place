@@ -98,17 +98,13 @@ export default class Location extends React.Component {
     };
     var validate = item => item && item.place_id ? item.place_id : false;
     var getPlaceId = compose(validate, find);
-    var success = (location) => {
-      this.props.onLocationSet && this.props.onLocationSet({
-        description: value,
-        coords: {
-          lat: location.lat(),
-          lng: location.lng()
-        }
-      });
+    var success = (result) => {
+      if (this.props.onLocationSet) {
+        this.props.onLocationSet(result)
+      }
     };
 
-    this._getCoordinates(getPlaceId(this._googlePredictions)).then(success);
+    this._geoCode(getPlaceId(this._googlePredictions)).then(success);
   }
 
   _getInputValue() {
@@ -139,13 +135,13 @@ export default class Location extends React.Component {
     return new Promise((resolve, reject) => {});
   }
 
-  _getCoordinates(placeId) {
+  _geoCode(placeId) {
     var geocoder = (this.props.google || google).createGeocoder();
 
     return new Promise((resolve, reject) => {
       geocoder.geocode({ placeId: placeId }, (results, status) => {
         if (status === 'OK' && results && results.length > 0) {
-          resolve(results[0].geometry.location);
+          resolve(results[0]);
         } else {
           reject(false);
         }

@@ -86,6 +86,7 @@ export default class Location extends React.Component {
 
 
   componentWillUnmount() {
+    var input = ReactDom.findDOMNode(this);
     input.removeEventListener('awesomplete-selectcomplete', this._handleAutocompleteSelect);
     input.removeEventListener('keyup', this._handleInputChange);
     input.removeEventListener('focus', this._handleInputFocus);

@@ -21,6 +21,12 @@ function tryParse(json) {
 }
 
 window.onload = () => {
+  var clearButton = document.querySelector('#clear-button');
+  clearButton.addEventListener('click', clear)
+
+  var setTextButton = document.querySelector('#set-text-button');
+  setTextButton.addEventListener('click', setText)
+
   var country = document.querySelector('#country-dropdown');
   country.addEventListener('change', render);
 
@@ -34,7 +40,15 @@ window.onload = () => {
 
 
 
-function render() {
+function clear() {
+  render('')
+}
+
+function setText() {
+  render('France')
+}
+
+function render(text) {
   var country = document.querySelector('#country-dropdown');
   var bounds = document.querySelector('#bounds');
   var container = document.querySelector('#container');
@@ -45,6 +59,7 @@ function render() {
       placeholder='Where are you?'
       country={ country.value }
       type='(regions)'
+      text={ text }
       bounds={ tryParse(bounds.value)  }
       noMatching='Sorry, I cannot find {{value}}.'
       onLocationSet={ onLocationSet }

@@ -6,7 +6,7 @@ import Awesomplete from 'awesomplete';
 import Promise from 'promise-polyfill';
 import google from './vendor/google';
 
-const NO_MATCHING = 'Unrecognised {{value}}, please check and re-enter.';
+const NO_MATCHING = 'Unrecognized {{value}}, please check and re-enter.';
 
 var compose = function () {
   var fns = arguments;
@@ -28,6 +28,17 @@ export default class Location extends React.Component {
     this._handleInputFocus = this._handleInputFocus.bind(this);
   }
 
+
+  componentDidUpdate(prevProps) {
+    let { text } = this.props
+    if (text != null  &&  text != this._getInputValue()) {
+      this.updateText(text)
+    }
+  }
+
+  updateText(text) {
+    ReactDom.findDOMNode(this).value = text
+  }
 
   render() {
     return (
@@ -63,6 +74,10 @@ export default class Location extends React.Component {
 
     input = ReactDom.findDOMNode(this);
     this._autocomplete = new Awesomplete(input, config);
+
+    if (this.props.text != null) {
+      this.updateText(this.props.text)
+    }
 
     input.addEventListener('awesomplete-selectcomplete', this._handleAutocompleteSelect);
     input.addEventListener('keyup', this._handleInputChange);
@@ -169,6 +184,7 @@ export default class Location extends React.Component {
 Location.propTypes = {
   onLocationSet: React.PropTypes.func,
   className: React.PropTypes.string,
+  text: React.PropTypes.string,
   placeholder: React.PropTypes.string,
   type: React.PropTypes.string,
   bounds: React.PropTypes.shape({

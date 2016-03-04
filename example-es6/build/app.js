@@ -79,6 +79,12 @@
 	}
 	
 	window.onload = function () {
+	  var clearButton = document.querySelector('#clear-button');
+	  clearButton.addEventListener('click', clear);
+	
+	  var setTextButton = document.querySelector('#set-text-button');
+	  setTextButton.addEventListener('click', setText);
+	
 	  var country = document.querySelector('#country-dropdown');
 	  country.addEventListener('change', render);
 	
@@ -90,7 +96,15 @@
 	  render();
 	};
 	
-	function render() {
+	function clear() {
+	  render('');
+	}
+	
+	function setText() {
+	  render('France');
+	}
+	
+	function render(text) {
 	  var country = document.querySelector('#country-dropdown');
 	  var bounds = document.querySelector('#bounds');
 	  var container = document.querySelector('#container');
@@ -100,6 +114,7 @@
 	    placeholder: 'Where are you?',
 	    country: country.value,
 	    type: '(regions)',
+	    text: text,
 	    bounds: tryParse(bounds.value),
 	    noMatching: 'Sorry, I cannot find {{value}}.',
 	    onLocationSet: onLocationSet
@@ -19730,7 +19745,7 @@
 	
 	var _vendorGoogle2 = _interopRequireDefault(_vendorGoogle);
 	
-	var NO_MATCHING = 'Unrecognised {{value}}, please check and re-enter.';
+	var NO_MATCHING = 'Unrecognized {{value}}, please check and re-enter.';
 	
 	var compose = function compose() {
 	  var fns = arguments;
@@ -19756,6 +19771,20 @@
 	  }
 	
 	  _createClass(Location, [{
+	    key: 'componentDidUpdate',
+	    value: function componentDidUpdate(prevProps) {
+	      var text = this.props.text;
+	
+	      if (text != null && text != this._getInputValue()) {
+	        this.updateText(text);
+	      }
+	    }
+	  }, {
+	    key: 'updateText',
+	    value: function updateText(text) {
+	      _reactDom2['default'].findDOMNode(this).value = text;
+	    }
+	  }, {
 	    key: 'render',
 	    value: function render() {
 	      return _react2['default'].createElement('input', {
@@ -19790,6 +19819,10 @@
 	
 	      input = _reactDom2['default'].findDOMNode(this);
 	      this._autocomplete = new _awesomplete2['default'](input, config);
+	
+	      if (this.props.text != null) {
+	        this.updateText(this.props.text);
+	      }
 	
 	      input.addEventListener('awesomplete-selectcomplete', this._handleAutocompleteSelect);
 	      input.addEventListener('keyup', this._handleInputChange);
@@ -19920,6 +19953,7 @@
 	Location.propTypes = {
 	  onLocationSet: _react2['default'].PropTypes.func,
 	  className: _react2['default'].PropTypes.string,
+	  text: _react2['default'].PropTypes.string,
 	  placeholder: _react2['default'].PropTypes.string,
 	  type: _react2['default'].PropTypes.string,
 	  bounds: _react2['default'].PropTypes.shape({

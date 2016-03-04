@@ -21,6 +21,14 @@ var compose = function () {
 
 export default class Location extends React.Component {
 
+  constructor(props) {
+    super(props);
+    this._handleAutocompleteSelect = this._handleAutocompleteSelect.bind(this);
+    this._handleInputChange = this._handleInputChange.bind(this);
+    this._handleInputFocus = this._handleInputFocus.bind(this);
+  }
+
+
   render() {
     return (
       <input
@@ -56,14 +64,21 @@ export default class Location extends React.Component {
     input = ReactDom.findDOMNode(this);
     this._autocomplete = new Awesomplete(input, config);
 
-    input.addEventListener(
-      'awesomplete-selectcomplete',
-      this._handleAutocompleteSelect.bind(this)
-    );
-    input.addEventListener(
-      'keyup',
-      this._handleInputChange.bind(this)
-    );
+    input.addEventListener('awesomplete-selectcomplete', this._handleAutocompleteSelect);
+    input.addEventListener('keyup', this._handleInputChange);
+    input.addEventListener('focus', this._handleInputFocus);
+  }
+
+
+  componentWillUnmount() {
+    input.removeEventListener('awesomplete-selectcomplete', this._handleAutocompleteSelect);
+    input.removeEventListener('keyup', this._handleInputChange);
+    input.removeEventListener('focus', this._handleInputFocus);
+  }
+
+  _handleInputFocus(event) {
+    var input = ReactDom.findDOMNode(this)
+    input.select()
   }
 
   _handleInputChange(event) {

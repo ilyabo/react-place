@@ -19746,10 +19746,13 @@
 	var Location = (function (_React$Component) {
 	  _inherits(Location, _React$Component);
 	
-	  function Location() {
+	  function Location(props) {
 	    _classCallCheck(this, Location);
 	
-	    _get(Object.getPrototypeOf(Location.prototype), 'constructor', this).apply(this, arguments);
+	    _get(Object.getPrototypeOf(Location.prototype), 'constructor', this).call(this, props);
+	    this._handleAutocompleteSelect = this._handleAutocompleteSelect.bind(this);
+	    this._handleInputChange = this._handleInputChange.bind(this);
+	    this._handleInputFocus = this._handleInputFocus.bind(this);
 	  }
 	
 	  _createClass(Location, [{
@@ -19788,8 +19791,22 @@
 	      input = _reactDom2['default'].findDOMNode(this);
 	      this._autocomplete = new _awesomplete2['default'](input, config);
 	
-	      input.addEventListener('awesomplete-selectcomplete', this._handleAutocompleteSelect.bind(this));
-	      input.addEventListener('keyup', this._handleInputChange.bind(this));
+	      input.addEventListener('awesomplete-selectcomplete', this._handleAutocompleteSelect);
+	      input.addEventListener('keyup', this._handleInputChange);
+	      input.addEventListener('focus', this._handleInputFocus);
+	    }
+	  }, {
+	    key: 'componentWillUnmount',
+	    value: function componentWillUnmount() {
+	      input.removeEventListener('awesomplete-selectcomplete', this._handleAutocompleteSelect);
+	      input.removeEventListener('keyup', this._handleInputChange);
+	      input.removeEventListener('focus', this._handleInputFocus);
+	    }
+	  }, {
+	    key: '_handleInputFocus',
+	    value: function _handleInputFocus(event) {
+	      var input = _reactDom2['default'].findDOMNode(this);
+	      input.select();
 	    }
 	  }, {
 	    key: '_handleInputChange',

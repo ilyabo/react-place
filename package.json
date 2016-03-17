@@ -28,7 +28,7 @@
     "example-es5-browserify": "browserify ./example-es5-browserify/src/index.js -o ./example-es5-browserify/build/app.js"
   },
   "dependencies": {
-    "awesomplete": "1.0.0",
+    "awesomplete": "^1.0.0",
     "promise-polyfill": "2.1.0"
   },
   "devDependencies": {
